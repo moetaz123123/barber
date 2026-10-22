@@ -2,11 +2,16 @@
 
 ## Deploy frontend and API together on Vercel
 
-Create a Vercel project from the repository root. The Vite client is built to
-`client/dist`, while requests under `/api/*` are handled by the Express
-serverless function in `api/[...path].js`. The client uses relative `/api`
-requests when `VITE_API_URL` is not set, so the deployed website and API share
-one public URL.
+Import the repository root as one Vercel project. The root `vercel.json`
+defines two Vercel Services:
+
+- `client` builds the Vite app from `client/` and serves its `dist/` output.
+- `server` runs the Express app from `server/`.
+
+Public requests to `/api/*` are routed to `server`; all other requests go to
+`client`. The client app also rewrites page URLs such as `/services` to its
+`index.html` so React Router can handle them. The browser calls the API using
+relative `/api` URLs, keeping the same public domain without a service binding.
 
 Set these environment variables in the Vercel project settings:
 
