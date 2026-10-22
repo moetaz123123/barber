@@ -28,7 +28,7 @@ app.use('/api/admin', adminRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && process.env.VERCEL !== '1') {
   app.listen(config.port, () => {
     console.log(`API démarrée sur http://localhost:${config.port}`);
     console.log(`CORS autorisé pour : ${config.clientOrigin}`);
