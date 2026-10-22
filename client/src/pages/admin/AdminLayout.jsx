@@ -8,6 +8,7 @@ import {
   Users,
   LogOut,
   Menu,
+  Scissors as BrandIcon,
   X,
 } from 'lucide-react';
 import { fr } from '../../i18n/fr';
@@ -38,9 +39,12 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-ink text-cream flex flex-col md:h-screen md:min-h-0 md:flex-row md:overflow-hidden">
-      <aside className="md:w-56 md:h-screen md:overflow-y-auto md:sticky md:top-0 border-b md:border-b-0 md:border-r border-white/10 bg-charcoal shrink-0">
-        <div className="flex items-center justify-between p-4 md:p-5">
-          <div className="font-display text-xl text-gold">{fr.brand}</div>
+      <aside className="sticky top-0 z-30 md:w-56 md:h-screen md:overflow-y-auto md:top-0 border-b md:border-b-0 md:border-r border-white/10 bg-charcoal shrink-0">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-5 md:px-5">
+          <div className="flex items-center gap-2">
+            <BrandIcon className="w-5 h-5 text-gold" aria-hidden="true" />
+            <span className="font-display text-2xl tracking-wide text-cream">{fr.brand}</span>
+          </div>
           <button
             type="button"
             aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
@@ -54,7 +58,11 @@ export default function AdminLayout() {
         </div>
         <nav
           id="admin-navigation"
-          className={`${menuOpen ? 'block' : 'hidden'} px-2 pb-4 space-y-1 md:block`}
+          className={`${
+            menuOpen
+              ? 'absolute inset-x-0 top-full bg-charcoal/95 backdrop-blur border-t border-white/5 px-4 py-6 space-y-4 animate-fade-in'
+              : 'hidden'
+          } md:static md:block md:bg-transparent md:backdrop-blur-0 md:border-t-0 md:px-2 md:py-0 md:pb-4 md:space-y-1`}
         >
           {links.map(({ to, end, label, icon: Icon }) => (
             <NavLink
@@ -63,8 +71,10 @@ export default function AdminLayout() {
               end={end}
               onClick={() => setMenuOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-2 px-3 py-2.5 text-sm transition-colors ${
-                  isActive ? 'bg-gold/15 text-gold' : 'text-cream/70 hover:text-cream'
+                `flex items-center gap-2 px-3 py-2.5 text-sm transition-colors md:py-2.5 ${
+                  isActive
+                    ? 'bg-gold/15 text-gold md:bg-gold/15'
+                    : 'text-cream/90 hover:text-cream md:text-cream/70'
                 }`
               }
             >
@@ -78,7 +88,7 @@ export default function AdminLayout() {
               setMenuOpen(false);
               logout();
             }}
-            className="flex items-center gap-2 px-3 py-2.5 text-sm text-cream/50 hover:text-cream w-full"
+            className="flex items-center gap-2 px-3 py-2.5 text-sm text-cream/70 hover:text-cream w-full"
           >
             <LogOut className="w-4 h-4" />
             {fr.admin.logout}
