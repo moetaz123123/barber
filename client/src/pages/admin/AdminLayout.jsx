@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink, Navigate, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -6,6 +7,8 @@ import {
   Clock,
   Users,
   LogOut,
+  Menu,
+  X,
 } from 'lucide-react';
 import { fr } from '../../i18n/fr';
 import { useAuth } from '../../context/AuthContext';
@@ -21,6 +24,7 @@ const links = [
 
 export default function AdminLayout() {
   const { loading, isAdmin, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (loading) {
     return (
@@ -35,13 +39,29 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-ink text-cream flex flex-col md:h-screen md:min-h-0 md:flex-row md:overflow-hidden">
       <aside className="md:w-56 md:h-screen md:overflow-y-auto md:sticky md:top-0 border-b md:border-b-0 md:border-r border-white/10 bg-charcoal shrink-0">
-        <div className="p-5 font-display text-xl text-gold">{fr.brand}</div>
-        <nav className="px-2 pb-4 space-y-1">
+        <div className="flex items-center justify-between p-4 md:p-5">
+          <div className="font-display text-xl text-gold">{fr.brand}</div>
+          <button
+            type="button"
+            aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-expanded={menuOpen}
+            aria-controls="admin-navigation"
+            onClick={() => setMenuOpen((open) => !open)}
+            className="inline-flex items-center justify-center p-2 text-cream hover:text-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold md:hidden"
+          >
+            {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+          </button>
+        </div>
+        <nav
+          id="admin-navigation"
+          className={`${menuOpen ? 'block' : 'hidden'} px-2 pb-4 space-y-1 md:block`}
+        >
           {links.map(({ to, end, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
+              onClick={() => setMenuOpen(false)}
               className={({ isActive }) =>
                 `flex items-center gap-2 px-3 py-2.5 text-sm transition-colors ${
                   isActive ? 'bg-gold/15 text-gold' : 'text-cream/70 hover:text-cream'
@@ -54,7 +74,10 @@ export default function AdminLayout() {
           ))}
           <button
             type="button"
-            onClick={logout}
+            onClick={() => {
+              setMenuOpen(false);
+              logout();
+            }}
             className="flex items-center gap-2 px-3 py-2.5 text-sm text-cream/50 hover:text-cream w-full"
           >
             <LogOut className="w-4 h-4" />

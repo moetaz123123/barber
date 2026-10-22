@@ -38,7 +38,7 @@ export default function AdminLogin() {
         <h1 className="font-display text-3xl text-cream text-center">{fr.admin.loginTitle}</h1>
         {!supabaseConfigured && (
           <p className="text-xs text-amber-300 border border-amber-500/30 bg-amber-950/40 px-3 py-2">
-            Configurez VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY dans client/.env
+            Configurez VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY dans client/.env en local ou dans les variables d’environnement Vercel du service client, puis redéployez.
           </p>
         )}
         {error && (
