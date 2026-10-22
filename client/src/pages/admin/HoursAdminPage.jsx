@@ -41,8 +41,6 @@ export default function HoursAdminPage() {
           ...h,
           open_time: sliceTime(h.open_time),
           close_time: sliceTime(h.close_time),
-          break_start: sliceTime(h.break_start),
-          break_end: sliceTime(h.break_end),
         }))
       );
       setSettings(data.settings);
@@ -73,8 +71,6 @@ export default function HoursAdminPage() {
         is_closed: h.is_closed,
         open_time: h.is_closed ? null : h.open_time || null,
         close_time: h.is_closed ? null : h.close_time || null,
-        break_start: h.is_closed || !h.break_start ? null : h.break_start,
-        break_end: h.is_closed || !h.break_end ? null : h.break_end,
       }));
       await api.put('/api/admin/hours', { hours: payload }, token);
       setMessage('Horaires enregistrés.');
@@ -142,47 +138,38 @@ export default function HoursAdminPage() {
           {hours.map((h) => (
             <div
               key={h.day_of_week}
-              className="grid sm:grid-cols-6 gap-2 items-center border border-white/10 p-3 bg-charcoal/40"
+              className="grid gap-2 border border-white/10 p-3 bg-charcoal/40 sm:grid-cols-[1fr_1fr_1fr_1fr] sm:items-center"
             >
               <p className="text-sm font-medium">{DAY_NAMES[h.day_of_week]}</p>
-              <label className="text-xs text-muted flex items-center gap-2">
+              <label className="flex items-center gap-2 text-xs text-muted sm:justify-self-center sm:self-center">
                 <input
                   type="checkbox"
                   checked={h.is_closed}
                   onChange={(e) => updateHour(h.day_of_week, { is_closed: e.target.checked })}
+                  className="h-4 w-4 cursor-pointer accent-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
                 />
                 Fermé
               </label>
-              <input
-                type="time"
-                disabled={h.is_closed}
-                value={h.open_time || ''}
-                onChange={(e) => updateHour(h.day_of_week, { open_time: e.target.value })}
-                className="bg-ink border border-white/15 px-2 py-1 text-sm"
-              />
-              <input
-                type="time"
-                disabled={h.is_closed}
-                value={h.close_time || ''}
-                onChange={(e) => updateHour(h.day_of_week, { close_time: e.target.value })}
-                className="bg-ink border border-white/15 px-2 py-1 text-sm"
-              />
-              <input
-                type="time"
-                disabled={h.is_closed}
-                value={h.break_start || ''}
-                onChange={(e) => updateHour(h.day_of_week, { break_start: e.target.value })}
-                className="bg-ink border border-white/15 px-2 py-1 text-sm"
-                title="Début pause"
-              />
-              <input
-                type="time"
-                disabled={h.is_closed}
-                value={h.break_end || ''}
-                onChange={(e) => updateHour(h.day_of_week, { break_end: e.target.value })}
-                className="bg-ink border border-white/15 px-2 py-1 text-sm"
-                title="Fin pause"
-              />
+              <label className="text-xs text-muted">
+                Ouverture
+                <input
+                  type="time"
+                  disabled={h.is_closed}
+                  value={h.open_time || ''}
+                  onChange={(e) => updateHour(h.day_of_week, { open_time: e.target.value })}
+                  className="mt-1 w-full bg-ink border border-white/15 px-2 py-1 text-sm text-cream"
+                />
+              </label>
+              <label className="text-xs text-muted">
+                Fermeture
+                <input
+                  type="time"
+                  disabled={h.is_closed}
+                  value={h.close_time || ''}
+                  onChange={(e) => updateHour(h.day_of_week, { close_time: e.target.value })}
+                  className="mt-1 w-full bg-ink border border-white/15 px-2 py-1 text-sm text-cream"
+                />
+              </label>
             </div>
           ))}
         </div>

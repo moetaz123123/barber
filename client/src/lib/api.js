@@ -96,3 +96,32 @@ export function getBusinessDate(dayOffset = 0) {
     .toISOString()
     .slice(0, 10);
 }
+
+export function getBusinessDateKey(iso) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: BUSINESS_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date(iso));
+  const dateParts = Object.fromEntries(
+    parts.filter((part) => part.type !== 'literal').map(({ type, value }) => [type, value])
+  );
+  return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+}
+
+export function formatBusinessTime(iso) {
+  return new Intl.DateTimeFormat('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: BUSINESS_TIME_ZONE,
+  }).format(new Date(iso));
+}
+
+export function formatBusinessDate(date) {
+  const [year, month, day] = date.split('-').map(Number);
+  return new Intl.DateTimeFormat('fr-FR', {
+    dateStyle: 'full',
+    timeZone: BUSINESS_TIME_ZONE,
+  }).format(new Date(Date.UTC(year, month - 1, day, 12)));
+}

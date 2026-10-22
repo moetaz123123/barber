@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS services (
   description TEXT NOT NULL DEFAULT '',
   price_cents INTEGER NOT NULL CHECK (price_cents >= 0),
   duration_minutes INTEGER NOT NULL CHECK (duration_minutes > 0),
-  category TEXT NOT NULL DEFAULT 'general',
   image_url TEXT,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   sort_order INTEGER NOT NULL DEFAULT 0,
@@ -58,8 +57,6 @@ CREATE TABLE IF NOT EXISTS business_hours (
   is_closed BOOLEAN NOT NULL DEFAULT FALSE,
   open_time TIME,
   close_time TIME,
-  break_start TIME,
-  break_end TIME,
   UNIQUE (day_of_week),
   CHECK (
     is_closed = TRUE
@@ -67,15 +64,6 @@ CREATE TABLE IF NOT EXISTS business_hours (
       open_time IS NOT NULL
       AND close_time IS NOT NULL
       AND open_time < close_time
-      AND (
-        break_start IS NULL
-        OR (
-          break_end IS NOT NULL
-          AND break_start < break_end
-          AND break_start >= open_time
-          AND break_end <= close_time
-        )
-      )
     )
   )
 );

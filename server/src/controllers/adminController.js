@@ -1,6 +1,7 @@
 import * as appointmentService from '../services/appointmentService.js';
 import * as serviceService from '../services/serviceService.js';
 import * as hoursService from '../services/hoursService.js';
+import { sendClientStatusNotification } from '../services/notificationService.js';
 
 export async function dashboard(req, res, next) {
   try {
@@ -36,7 +37,20 @@ export async function updateStatus(req, res, next) {
       req.body.status,
       req.body.adminNotes
     );
-    res.json({ appointment });
+    let notificationError;
+    if (['confirmed', 'rejected'].includes(appointment.status)) {
+      try {
+        await sendClientStatusNotification(appointment);
+      } catch (error) {
+        console.error(
+          `E-mail de statut non envoyé pour le rendez-vous ${appointment.id}:`,
+          error
+        );
+        notificationError =
+          'Le statut a été modifié, mais l’e-mail au client n’a pas pu être envoyé.';
+      }
+    }
+    res.json({ appointment, notificationError });
   } catch (err) {
     next(err);
   }

@@ -5,7 +5,7 @@ export async function listActiveServices() {
   const { data, error } = await supabaseAdmin
     .from('services')
     .select(
-      'id, name, description, price_cents, duration_minutes, category, image_url, sort_order'
+      'id, name, description, price_cents, duration_minutes, image_url, sort_order'
     )
     .eq('is_active', true)
     .order('sort_order', { ascending: true });
@@ -32,7 +32,6 @@ export async function createService(payload) {
       description: payload.description || '',
       price_cents: payload.price_cents,
       duration_minutes: payload.duration_minutes,
-      category: payload.category || 'general',
       image_url: payload.image_url || null,
       is_active: payload.is_active ?? true,
       sort_order: payload.sort_order ?? 0,
@@ -51,7 +50,6 @@ export async function updateService(id, payload) {
     'description',
     'price_cents',
     'duration_minutes',
-    'category',
     'image_url',
     'is_active',
     'sort_order',

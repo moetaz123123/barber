@@ -13,76 +13,72 @@ ON CONFLICT (id) DO UPDATE SET
   timezone = EXCLUDED.timezone,
   updated_at = NOW();
 
--- Horaires : Lun–Sam 09:00–19:00, pause 13:00–14:00 ; Dimanche fermé
-INSERT INTO business_hours (day_of_week, is_closed, open_time, close_time, break_start, break_end)
+-- Horaires : Lun–Sam 09:00–19:00 ; Dimanche fermé
+INSERT INTO business_hours (day_of_week, is_closed, open_time, close_time)
 VALUES
-  (0, TRUE,  NULL, NULL, NULL, NULL),
-  (1, FALSE, '09:00', '19:00', '13:00', '14:00'),
-  (2, FALSE, '09:00', '19:00', '13:00', '14:00'),
-  (3, FALSE, '09:00', '19:00', '13:00', '14:00'),
-  (4, FALSE, '09:00', '19:00', '13:00', '14:00'),
-  (5, FALSE, '09:00', '19:00', '13:00', '14:00'),
-  (6, FALSE, '09:00', '19:00', '13:00', '14:00')
+  (0, TRUE,  NULL, NULL),
+  (1, FALSE, '09:00', '19:00'),
+  (2, FALSE, '09:00', '19:00'),
+  (3, FALSE, '09:00', '19:00'),
+  (4, FALSE, '09:00', '19:00'),
+  (5, FALSE, '09:00', '19:00'),
+  (6, FALSE, '09:00', '19:00')
 ON CONFLICT (day_of_week) DO UPDATE SET
   is_closed = EXCLUDED.is_closed,
   open_time = EXCLUDED.open_time,
-  close_time = EXCLUDED.close_time,
-  break_start = EXCLUDED.break_start,
-  break_end = EXCLUDED.break_end;
+  close_time = EXCLUDED.close_time;
 
 -- Services (prix démo en millimes / centimes DT — ex. 8000 = 80 DT)
-DELETE FROM services WHERE name LIKE '%(démo)%' OR category IN (
-  'coupe', 'barbe', 'combo', 'soins', 'lissage', 'autre'
-);
+DELETE FROM services WHERE name LIKE '%(démo)%';
 
-INSERT INTO services (name, description, price_cents, duration_minutes, category, image_url, is_active, sort_order)
+INSERT INTO services (name, description, price_cents, duration_minutes, image_url, is_active, sort_order)
 VALUES
   (
     'Coupe de cheveux (démo)',
     'Coupe classique adaptée à votre morphologie et style.',
-    8000, 30, 'coupe',
+    8000, 30,
     '/images/coupe.jpg',
     TRUE, 1
   ),
   (
     'Coupe dégradée / fade (démo)',
     'Dégradé précis, fade bas, moyen ou haut selon votre préférence.',
-    10000, 45, 'coupe',
+    10000, 45,
     '/images/fade.jpg',
     TRUE, 2
   ),
   (
     'Taille de barbe (démo)',
     'Taille, contour et finition pour une barbe nette et soignée.',
-    5000, 20, 'barbe',
+    5000, 20,
     '/images/barbe.jpg',
     TRUE, 3
   ),
   (
     'Coupe + barbe (démo)',
     'Prestation complète : coupe de cheveux et taille de barbe.',
-    13000, 50, 'combo',
+    13000, 50,
     '/images/combo.jpg',
     TRUE, 4
   ),
   (
     'Soins capillaires (démo)',
     'Shampooing, soin hydratant et styling pour cheveux en pleine forme.',
-    7000, 30, 'soins',
+    7000, 30,
     '/images/soins.jpg',
     TRUE, 5
   ),
   (
     'Protéine / lissage capillaire (démo)',
     'Traitement protéiné ou lissage pour cheveux plus lisses et disciplinés.',
-    25000, 90, 'lissage',
+    25000, 90,
     '/images/lissage.jpg',
     TRUE, 6
   ),
   (
     'Prestation personnalisée (démo)',
     'Service sur mesure — décrivez votre besoin dans les remarques.',
-    15000, 60, 'autre',
+    15000, 60,
     '/images/autre.jpg',
     TRUE, 7
   );

@@ -1,9 +1,37 @@
 import { supabaseAdmin } from '../lib/supabase.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { assertSlotAvailable, getAvailableSlots } from './availabilityService.js';
+import { getTimezoneOffsetMinutes, localDateMinutesToUtc } from '../utils/time.js';
 
 const PUBLIC_SAFE_FIELDS =
   'id, tracking_token, service_name, service_price_cents, service_duration_minutes, starts_at, ends_at, status, customer_name, customer_phone, customer_email, notes, created_at';
+const BUSINESS_TIME_ZONE = 'Africa/Tunis';
+
+function getBusinessDate(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: BUSINESS_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const values = Object.fromEntries(
+    parts.filter((part) => part.type !== 'literal').map(({ type, value }) => [type, value])
+  );
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function getBusinessDayBounds(date) {
+  const [year, month, day] = date.split('-').map(Number);
+  const nextDate = new Date(Date.UTC(year, month - 1, day + 1)).toISOString().slice(0, 10);
+  const toUtc = (localDate) => {
+    const offset = getTimezoneOffsetMinutes(
+      BUSINESS_TIME_ZONE,
+      new Date(`${localDate}T12:00:00.000Z`)
+    );
+    return localDateMinutesToUtc(localDate, 0, offset).toISOString();
+  };
+  return { start: toUtc(date), end: toUtc(nextDate) };
+}
 
 export async function createAppointment({
   serviceId,
@@ -194,15 +222,14 @@ export async function updateAppointmentStatus(id, status, adminNotes) {
 }
 
 export async function getDashboardStats(dayDateStr) {
-  const day = dayDateStr || new Date().toISOString().slice(0, 10);
-  const dayStart = `${day}T00:00:00.000Z`;
-  const dayEnd = `${day}T23:59:59.999Z`;
+  const day = dayDateStr || getBusinessDate();
+  const { start: dayStart, end: dayEnd } = getBusinessDayBounds(day);
 
   const { data: todayAppts, error: e1 } = await supabaseAdmin
     .from('appointments')
     .select('id, status, service_price_cents')
     .gte('starts_at', dayStart)
-    .lte('starts_at', dayEnd);
+    .lt('starts_at', dayEnd);
 
   if (e1) throw new AppError('Erreur statistiques', 500);
 
@@ -240,6 +267,9 @@ export async function getDashboardStats(dayDateStr) {
     confirmed_total: confirmedCount ?? 0,
     completed_total: (completed || []).length,
     estimated_revenue_cents: estimatedRevenueCents,
+    today_revenue_cents: today
+      .filter((appointment) => appointment.status === 'completed')
+      .reduce((sum, appointment) => sum + (appointment.service_price_cents || 0), 0),
     note: 'Les revenus estimés sont basés sur les prestations marquées terminées, pas sur des paiements encaissés.',
   };
 }

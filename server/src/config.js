@@ -20,6 +20,13 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   businessTimezone: process.env.BUSINESS_TIMEZONE || 'Africa/Tunis',
+  smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
+  smtpPort: Number(process.env.SMTP_PORT || 465),
+  smtpUser: process.env.SMTP_USER || '',
+  smtpPassword: process.env.SMTP_PASSWORD || '',
+  notificationEmail: process.env.NOTIFICATION_EMAIL || '',
+  adminAppointmentsUrl:
+    process.env.ADMIN_APPOINTMENTS_URL || 'http://localhost:5173/admin/rendez-vous',
   supabaseUrl: isTest ? (process.env.SUPABASE_URL || 'http://localhost') : required('SUPABASE_URL'),
   supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
   supabaseServiceRoleKey: isTest

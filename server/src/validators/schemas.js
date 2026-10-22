@@ -36,7 +36,6 @@ export const serviceSchema = z.object({
   description: z.string().max(2000).optional(),
   price_cents: z.number().int().min(0),
   duration_minutes: z.number().int().min(5).max(480),
-  category: z.string().max(60).optional(),
   image_url: z
     .string()
     .optional()
@@ -57,8 +56,6 @@ export const hoursRowSchema = z.object({
   is_closed: z.boolean(),
   open_time: z.string().nullable().optional(),
   close_time: z.string().nullable().optional(),
-  break_start: z.string().nullable().optional(),
-  break_end: z.string().nullable().optional(),
 });
 
 export const hoursBulkSchema = z.object({

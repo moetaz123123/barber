@@ -5,18 +5,10 @@ import { fr } from '../i18n/fr';
 import { formatPrice } from '../lib/api';
 import Button from './ui/Button';
 
-const CATEGORY_FALLBACK = {
-  coupe: '/images/coupe.jpg',
-  barbe: '/images/barbe.jpg',
-  combo: '/images/combo.jpg',
-  soins: '/images/soins.jpg',
-  lissage: '/images/lissage.jpg',
-  autre: '/images/autre.jpg',
-};
+const FALLBACK_IMAGE = '/images/coupe.jpg';
 
 export default function ServiceCard({ service, featured = false }) {
-  const fallback = CATEGORY_FALLBACK[service.category] || '/images/coupe.jpg';
-  const [src, setSrc] = useState(service.image_url || fallback);
+  const [src, setSrc] = useState(service.image_url || FALLBACK_IMAGE);
 
   return (
     <article
@@ -32,7 +24,7 @@ export default function ServiceCard({ service, featured = false }) {
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             loading="lazy"
             onError={() => {
-              if (src !== fallback) setSrc(fallback);
+              if (src !== FALLBACK_IMAGE) setSrc(FALLBACK_IMAGE);
             }}
           />
         ) : (

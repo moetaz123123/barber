@@ -4,6 +4,7 @@ import * as hoursService from '../services/hoursService.js';
 import { getAvailableSlots } from '../services/availabilityService.js';
 import { supabaseAdmin } from '../lib/supabase.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { sendAppointmentNotification } from '../services/notificationService.js';
 
 export async function health(_req, res) {
   res.json({ status: 'ok', service: 'barber-booking-api', time: new Date().toISOString() });
@@ -49,6 +50,12 @@ export async function createAppointment(req, res, next) {
       customerEmail: req.body.customerEmail,
       notes: req.body.notes,
     });
+
+    try {
+      await sendAppointmentNotification(appointment);
+    } catch (error) {
+      console.error(`Notification e-mail non envoyée pour le rendez-vous ${appointment.id}:`, error);
+    }
 
     res.status(201).json({
       message: 'Demande de réservation enregistrée. Statut : en attente de validation.',

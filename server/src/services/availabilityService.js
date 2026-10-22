@@ -89,8 +89,6 @@ export async function getAvailableSlots(dateStr, durationMinutes) {
 
   const openM = parseTimeToMinutes(hours.open_time);
   const closeM = parseTimeToMinutes(hours.close_time);
-  const breakStart = parseTimeToMinutes(hours.break_start);
-  const breakEnd = parseTimeToMinutes(hours.break_end);
 
   const offset = getTimezoneOffsetMinutes(tz, noonUtc);
   const dayStart = localDateMinutesToUtc(dateStr, 0, offset);
@@ -114,11 +112,6 @@ export async function getAvailableSlots(dateStr, durationMinutes) {
 
   for (let startM = openM; startM + durationMinutes <= closeM; startM += slotStep) {
     const endM = startM + durationMinutes;
-
-    // Pause
-    if (breakStart != null && breakEnd != null) {
-      if (rangesOverlap(startM, endM, breakStart, breakEnd)) continue;
-    }
 
     const slotStart = localDateMinutesToUtc(dateStr, startM, offset);
     const slotEnd = localDateMinutesToUtc(dateStr, endM, offset);
