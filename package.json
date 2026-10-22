@@ -1,0 +1,13 @@
+{
+  "name": "barber-booking",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site de réservation barber shop — React + Express + Supabase",
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "test": "npm test --prefix server",
+    "build": "npm run build --prefix client"
+  }
+}
